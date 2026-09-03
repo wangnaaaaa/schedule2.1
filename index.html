@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>郑州轻工业大学 - 电子科技25-03、04班 课表</title>
+    <title>郑州轻工业大学 - 电子科学与技术25-03、4班 课表</title>
 
     <!-- PWA 配置 -->
     <link rel="manifest" href="manifest.json">
@@ -738,7 +738,7 @@
         <!-- 头部 -->
         <div class="header">
             <div class="header-left">
-                <h1>📚 电子科技25-04班 · 课表</h1>
+                <h1>📚 电子科学与技术25-03、4班 · 课表</h1>
                 <div class="sub">
                     <span>🏫 郑州轻工业大学 · 电子信息学院</span>
                     <span>📅 2026-2027学年 第一学期</span>
@@ -798,6 +798,7 @@
             <span>📌 <strong>提示：</strong>点击课程卡片可编辑或删除</span>
             <span>🕒 <strong>节次：</strong>1-2节(08:00-09:40) · 3-4节(10:00-11:40) · 5-6节(14:30-16:10) · 7-8节(16:30-18:10) · 9-10节(19:30-21:10)</span>
             <span>📐 <strong>规则：</strong>每节45分钟 · 小课间10分钟 · 大课间20分钟</span>
+            <span>📆 <strong>周次格式：</strong>支持单双周，如 "1-16单" 或 "2,4,6,8,10,14"</span>
         </div>
     </div>
 
@@ -822,9 +823,9 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="f_weeks">上课周次 *（如：1-8,10,12）</label>
-                    <input type="text" id="f_weeks" placeholder="1-17 或 1-8,10,12" required>
-                    <div class="hint">支持范围格式：1-8 表示第1至第8周；逗号分隔多个范围</div>
+                    <label for="f_weeks">上课周次 *（支持单双周、逗号分隔）</label>
+                    <input type="text" id="f_weeks" placeholder="如：1-16单 或 2,4,6,8,10,14" required>
+                    <div class="hint">格式示例：1-16单（奇数周）、1-16双（偶数周）、1-8,10,12（普通）、2,4,6,8,10,14（枚举）</div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -877,7 +878,7 @@
             // ============================================================
             // 常量配置
             // ============================================================
-            const STORAGE_KEY = 'zzuli_elec25_04_schedule';
+            const STORAGE_KEY = 'zzuli_elec25_03_04_schedule';
             const SEMESTER_START = new Date(2026, 8, 7); // 2026年9月7日 星期一
             const MAX_WEEK = 17;
             const DAYS_CN = ['一', '二', '三', '四', '五', '六', '日'];
@@ -907,7 +908,7 @@
             ];
 
             // ============================================================
-           // 默认课程数据
+            // 默认课程数据
             // ============================================================
             function getDefaultCourses() {
                 return [
@@ -952,7 +953,7 @@
                         ], classroom: '', note: '足球专选', isDesign: false },
                     { id: 19, name: '大学体育3', teacher: '朱广', weeks: '1-17', day: 2, sections: ['7-8'],
                         classroom: '', note: '', isDesign: false },
-                    { id: 20, name: '中国近现代史纲要', teacher: '赵阳', weeks: '2，4，6，8，10，14', day: 3, sections: [
+                    { id: 20, name: '中国近现代史纲要', teacher: '赵阳', weeks: '2,4,6,8,10,14', day: 3, sections: [
                             '7-8'
                         ], classroom: '三教楼308', note: '', isDesign: false },
                     { id: 21, name: '中国近现代史纲要', teacher: '赵阳', weeks: '1-11,14', day: 5, sections: [
@@ -1015,24 +1016,48 @@
             }
 
             // ============================================================
-            // 周次解析与格式化
+            // 周次解析（支持单双周、枚举、中文逗号）
             // ============================================================
             function parseWeeks(str) {
                 str = (str || '').trim();
+                // 兼容中文逗号
+                str = str.replace(/，/g, ',');
                 if (!str) return [];
                 const weeks = new Set();
                 const parts = str.split(',');
                 for (let part of parts) {
                     part = part.trim();
                     if (!part) continue;
+                    // 检测是否包含单双标记
+                    let parity = null; // null: 无, 'odd': 单, 'even': 双
+                    if (part.includes('单')) {
+                        parity = 'odd';
+                        part = part.replace('单', '');
+                    } else if (part.includes('双')) {
+                        parity = 'even';
+                        part = part.replace('双', '');
+                    }
+                    part = part.trim();
+                    if (!part) continue;
+
                     if (part.includes('-')) {
-                        const [start, end] = part.split('-').map(Number);
+                        const [startStr, endStr] = part.split('-');
+                        const start = Number(startStr);
+                        const end = Number(endStr);
                         if (!isNaN(start) && !isNaN(end) && start >= 1 && end <= MAX_WEEK && start <= end) {
-                            for (let i = start; i <= end; i++) weeks.add(i);
+                            for (let i = start; i <= end; i++) {
+                                if (parity === 'odd' && i % 2 === 1) weeks.add(i);
+                                else if (parity === 'even' && i % 2 === 0) weeks.add(i);
+                                else if (parity === null) weeks.add(i);
+                            }
                         }
                     } else {
                         const num = Number(part);
-                        if (!isNaN(num) && num >= 1 && num <= MAX_WEEK) weeks.add(num);
+                        if (!isNaN(num) && num >= 1 && num <= MAX_WEEK) {
+                            if (parity === 'odd' && num % 2 === 1) weeks.add(num);
+                            else if (parity === 'even' && num % 2 === 0) weeks.add(num);
+                            else if (parity === null) weeks.add(num);
+                        }
                     }
                 }
                 return [...weeks].sort((a, b) => a - b);
@@ -1365,7 +1390,7 @@
             function saveCourse(e) {
                 e.preventDefault();
                 const name = document.getElementById('f_name').value.trim();
-                const weeks = document.getElementById('f_weeks').value.trim();
+                const weeksInput = document.getElementById('f_weeks').value.trim();
                 const day = parseInt(document.getElementById('f_day').value, 10);
                 const isDesign = document.getElementById('f_isDesign').checked;
 
@@ -1373,14 +1398,14 @@
                     showToast('⚠️ 请输入课程名称');
                     return;
                 }
-                if (!weeks) {
+                if (!weeksInput) {
                     showToast('⚠️ 请输入上课周次');
                     return;
                 }
 
-                const parsedWeeks = parseWeeks(weeks);
+                const parsedWeeks = parseWeeks(weeksInput);
                 if (parsedWeeks.length === 0) {
-                    showToast('⚠️ 周次格式无效，请检查（如：1-8,10,12）');
+                    showToast('⚠️ 周次格式无效，请检查（如：1-8,10,12 或 1-16单）');
                     return;
                 }
 
@@ -1402,7 +1427,7 @@
                     name,
                     teacher,
                     classroom,
-                    weeks: formatWeeks(parsedWeeks),
+                    weeks: weeksInput, // 保留原始字符串，以支持单双周、枚举等
                     day: isDesign ? 0 : day,
                     sections: isDesign ? [] : selectedSections,
                     note,
