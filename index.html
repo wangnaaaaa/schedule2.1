@@ -879,7 +879,7 @@
             // 常量配置
             // ============================================================
             const STORAGE_KEY = 'zzuli_elec25_03_04_schedule';
-            const DATA_VERSION = '2.1'; // 增加版本号，用于强制更新旧缓存
+            const DATA_VERSION = '4.0'; // 更新版本号，强制刷新修正单双周数据
             const SEMESTER_START = new Date(2026, 8, 7); // 2026年9月7日 星期一
             const MAX_WEEK = 17;
             const DAYS_CN = ['一', '二', '三', '四', '五', '六', '日'];
@@ -908,66 +908,88 @@
             ];
 
             // ============================================================
-            // 默认课程数据
+            // 默认课程数据 ———— 依据《教学安排表.xls》逐条录入，修正单双周
             // ============================================================
             function getDefaultCourses() {
                 return [
+                    // ===== 星期一 =====
+                    // 1-4节：物理实验1（1-2节 + 3-4节连上）
                     { id: 1, name: '物理实验1', teacher: '赵承周', weeks: '1-8', day: 1, sections: ['1-2', '3-4'],
                         classroom: '', note: '1-4节连上', isDesign: false },
-                    { id: 2, name: '大学美育实践', teacher: '杨荆州', weeks: '1-8', day: 2, sections: ['1-2'],
-                        classroom: '工程楼108', note: '', isDesign: false },
-                    { id: 3, name: '大学英语视听说A3', teacher: '', weeks: '1-8', day: 2, sections: ['1-2'],
-                        classroom: '', note: '', isDesign: false },
-                    { id: 4, name: '应用光学', teacher: '翟凤潇', weeks: '1-11,14', day: 3, sections: ['1-2'],
-                        classroom: '一教楼605', note: '', isDesign: false },
-                    { id: 5, name: '大学英语读写译A3', teacher: '蔡礼鸿', weeks: '1-8', day: 4, sections: ['1-2'],
-                        classroom: '一教楼303', note: '', isDesign: false },
-                    { id: 6, name: '大学英语视听说A3', teacher: '', weeks: '1-8', day: 4, sections: ['1-2'],
-                        classroom: '', note: '', isDesign: false },
-                    { id: 7, name: '形势与政策3', teacher: '毛倩', weeks: '5-8', day: 5, sections: ['1-2'],
-                        classroom: '三教楼206', note: '', isDesign: false },
-                    { id: 8, name: '模拟电子线路A', teacher: '李素萍', weeks: '2-11,14-15', day: 2,
-                        sections: ['3-4'], classroom: '三教楼301', note: '', isDesign: false },
-                    { id: 9, name: '大学物理A2', teacher: '冯世全', weeks: '1-10', day: 3, sections: ['3-4'],
-                        classroom: '三教楼103', note: '', isDesign: false },
-                    { id: 10, name: '模拟电子线路A', teacher: '李素萍', weeks: '2-11,14-15', day: 4,
-                        sections: ['3-4'], classroom: '三教楼301', note: '', isDesign: false },
-                    { id: 11, name: '大学物理A2', teacher: '冯世全', weeks: '1-10', day: 5, sections: ['3-4'],
-                        classroom: '三教楼103', note: '', isDesign: false },
-                    { id: 12, name: '单片机原理及应用', teacher: '张晓冬', weeks: '6-11,14-16', day: 1,
-                        sections: ['5-6'], classroom: '三教楼108', note: '', isDesign: false },
-                    { id: 13, name: '电磁场电磁波B', teacher: '杨艳丽', weeks: '1-11,14', day: 2, sections: [
-                            '5-6'
-                        ], classroom: '一教楼515', note: '', isDesign: false },
-                    { id: 14, name: '概率论与数理统计', teacher: '刘静静', weeks: '1-11,14', day: 3,
-                        sections: ['5-6'], classroom: '三教楼201', note: '', isDesign: false },
-                    { id: 15, name: '概率论与数理统计', teacher: '刘静静', weeks: '1-11,14', day: 5,
-                        sections: ['5-6'], classroom: '三教楼201', note: '', isDesign: false },
-                    { id: 16, name: '大学生体育3', teacher: '李展', weeks: '2-17', day: 6, sections: [
-                            '5-6'
-                        ], classroom: '', note: '', isDesign: false },
-                    { id: 17, name: '应用光学', teacher: '翟凤潇', weeks: '1-11,14', day: 1, sections: ['7-8'],
+                    // 5-6节：单片机原理及应用
+                    { id: 2, name: '单片机原理及应用', teacher: '张晓冬', weeks: '6-11,14-16', day: 1, sections: ['5-6'],
+                        classroom: '三教楼108', note: '', isDesign: false },
+                    // 7-8节：应用光学
+                    { id: 3, name: '应用光学', teacher: '翟凤潇', weeks: '1-11,14', day: 1, sections: ['7-8'],
                         classroom: '一教楼711', note: '', isDesign: false },
-                    { id: 18, name: '大学体育3(足球)', teacher: '林春阳', weeks: '1-17', day: 2, sections: [
-                            '7-8'
-                        ], classroom: '', note: '足球专选', isDesign: false },
-                    { id: 19, name: '大学体育3', teacher: '朱广', weeks: '1-17', day: 2, sections: ['7-8'],
+
+                    // ===== 星期二 =====
+                    // 1-2节：大学英语视听说A3（9-11,14-16周）
+                    { id: 4, name: '大学英语视听说A3', teacher: '马奔放', weeks: '9-11,14-16', day: 2, sections: ['1-2'],
+                        classroom: '一教楼903', note: '', isDesign: false },
+                    // 1-2节：大学美育实践（1-8周）
+                    { id: 5, name: '大学美育实践', teacher: '杨荆州', weeks: '1-8', day: 2, sections: ['1-2'],
+                        classroom: '工程楼108', note: '', isDesign: false },
+                    // 3-4节：模拟电子线路A
+                    { id: 6, name: '模拟电子线路A', teacher: '李素萍', weeks: '2-11,14-15', day: 2, sections: ['3-4'],
+                        classroom: '三教楼301', note: '', isDesign: false },
+                    // 5-6节：电磁场电磁波B
+                    { id: 7, name: '电磁场电磁波B', teacher: '杨艳丽', weeks: '1-11,14', day: 2, sections: ['5-6'],
+                        classroom: '一教楼515', note: '', isDesign: false },
+                    // 7-8节：大学体育3
+                    { id: 8, name: '大学体育3', teacher: '王洪海', weeks: '1-17', day: 2, sections: ['7-8'],
                         classroom: '', note: '', isDesign: false },
-                    { id: 20, name: '中国近现代史纲要', teacher: '赵阳', weeks: '2,4,6,8,10,14', day: 3, sections: [
-                            '7-8'
-                        ], classroom: '三教楼308', note: '', isDesign: false },
-                    { id: 21, name: '中国近现代史纲要', teacher: '赵阳', weeks: '1-11,14', day: 5, sections: [
-                            '7-8'
-                        ], classroom: '三教楼308', note: '', isDesign: false },
-                    { id: 22, name: '单片机原理及应用', teacher: '张晓冬', weeks: '6-11,14-16', day: 3,
-                        sections: ['9-10'], classroom: '三教楼104', note: '', isDesign: false },
-                    { id: 23, name: '创新创业基础', teacher: '李楠楠', weeks: '1-11,14', day: 4, sections: [
-                            '9-10'
-                        ], classroom: '三教楼308', note: '', isDesign: false },
-                    { id: 24, name: '电磁场电磁波B', teacher: '杨艳丽', weeks: '1-11,14', day: 5, sections: [
-                            '9-10'
-                        ], classroom: '一教楼515', note: '', isDesign: false },
-                    { id: 25, name: '单片机原理及应用课程设计', teacher: '张晓冬、李楠楠', weeks: '12-13', day: 0,
+
+                    // ===== 星期三 =====
+                    // 1-2节：应用光学
+                    { id: 9, name: '应用光学', teacher: '翟凤潇', weeks: '1-11,14', day: 3, sections: ['1-2'],
+                        classroom: '一教楼605', note: '', isDesign: false },
+                    // 3-4节：大学物理A2
+                    { id: 10, name: '大学物理A2', teacher: '冯世全', weeks: '1-10', day: 3, sections: ['3-4'],
+                        classroom: '三教楼103', note: '', isDesign: false },
+                    // 5-6节：概率论与数理统计
+                    { id: 11, name: '概率论与数理统计', teacher: '刘静静', weeks: '1-11,14', day: 3, sections: ['5-6'],
+                        classroom: '三教楼201', note: '', isDesign: false },
+                    // 7-8节：中国近现代史纲要（双周）—— 修正为“1-11双,14”
+                    { id: 12, name: '中国近现代史纲要', teacher: '赵阳', weeks: '1-11双,14', day: 3, sections: ['7-8'],
+                        classroom: '三教楼308', note: '双周', isDesign: false },
+                    // 9-10节：单片机原理及应用
+                    { id: 13, name: '单片机原理及应用', teacher: '张晓冬', weeks: '6-11,14-16', day: 3, sections: ['9-10'],
+                        classroom: '三教楼104', note: '', isDesign: false },
+
+                    // ===== 星期四 =====
+                    // 1-2节：大学英语读写译A3（1-8周）
+                    { id: 14, name: '大学英语读写译A3', teacher: '蔡礼鸿', weeks: '1-8', day: 4, sections: ['1-2'],
+                        classroom: '一教楼303', note: '', isDesign: false },
+                    // 1-2节：大学英语视听说A3（9-11,14 双）—— 修正为“9-11双,14”
+                    { id: 15, name: '大学英语视听说A3', teacher: '马奔放', weeks: '9-11双,14', day: 4, sections: ['1-2'],
+                        classroom: '一教楼903', note: '双周', isDesign: false },
+                    // 3-4节：模拟电子线路A
+                    { id: 16, name: '模拟电子线路A', teacher: '李素萍', weeks: '2-11,14-15', day: 4, sections: ['3-4'],
+                        classroom: '三教楼301', note: '', isDesign: false },
+                    // 9-10节：创新创业基础
+                    { id: 17, name: '创新创业基础', teacher: '李楠楠', weeks: '1-11,14', day: 4, sections: ['9-10'],
+                        classroom: '三教楼308', note: '', isDesign: false },
+
+                    // ===== 星期五 =====
+                    // 1-2节：形势与政策3
+                    { id: 18, name: '形势与政策3', teacher: '毛倩', weeks: '5-8', day: 5, sections: ['1-2'],
+                        classroom: '三教楼206', note: '', isDesign: false },
+                    // 3-4节：大学物理A2
+                    { id: 19, name: '大学物理A2', teacher: '冯世全', weeks: '1-10', day: 5, sections: ['3-4'],
+                        classroom: '三教楼103', note: '', isDesign: false },
+                    // 5-6节：概率论与数理统计
+                    { id: 20, name: '概率论与数理统计', teacher: '刘静静', weeks: '1-11,14', day: 5, sections: ['5-6'],
+                        classroom: '三教楼201', note: '', isDesign: false },
+                    // 7-8节：中国近现代史纲要（全部周）
+                    { id: 21, name: '中国近现代史纲要', teacher: '赵阳', weeks: '1-11,14', day: 5, sections: ['7-8'],
+                        classroom: '三教楼308', note: '', isDesign: false },
+                    // 9-10节：电磁场电磁波B
+                    { id: 22, name: '电磁场电磁波B', teacher: '杨艳丽', weeks: '1-11,14', day: 5, sections: ['9-10'],
+                        classroom: '一教楼515', note: '', isDesign: false },
+
+                    // ===== 课程设计 =====
+                    { id: 23, name: '单片机原理及应用课程设计', teacher: '张晓冬、李楠楠', weeks: '12-13', day: 0,
                         sections: [], classroom: '', note: '课程设计（第12-13周集中）', isDesign: true }
                 ];
             }
@@ -981,7 +1003,7 @@
                 try {
                     const storedVersion = localStorage.getItem(STORAGE_KEY + '_version');
                     const stored = localStorage.getItem(STORAGE_KEY);
-                    // 如果版本不一致或没有数据，则使用默认数据并覆盖
+                    // 版本不一致或没有数据则重置为默认
                     if (storedVersion !== DATA_VERSION || !stored) {
                         coursesData = getDefaultCourses();
                         saveData();
@@ -1012,7 +1034,7 @@
                     coursesData = getDefaultCourses();
                     saveData();
                     render(currentWeek);
-                    showToast('已恢复默认课表');
+                    showToast('已恢复默认课表（教学安排表）');
                 }
             }
 
@@ -1025,7 +1047,6 @@
             // ============================================================
             function parseWeeks(str) {
                 str = (str || '').trim();
-                // 兼容中文逗号、分号、空格作为分隔符
                 str = str.replace(/[，;；\s]+/g, ',');
                 if (!str) return [];
                 const weeks = new Set();
@@ -1033,7 +1054,6 @@
                 for (let part of parts) {
                     part = part.trim();
                     if (!part) continue;
-                    // 检测是否包含单双标记
                     let parity = null;
                     if (part.includes('单')) {
                         parity = 'odd';
@@ -1155,7 +1175,7 @@
 
             function render(week) {
                 currentWeek = week;
-                const weekNum = parseInt(week, 10);
+                let weekNum = parseInt(week, 10);
                 if (isNaN(weekNum) || weekNum < 1 || weekNum > MAX_WEEK) {
                     weekNum = 1;
                     currentWeek = 1;
@@ -1219,7 +1239,7 @@
                             cellHtml = '<span class="empty-cell">—</span>';
                         } else {
                             const sorted = [...cellCourses].sort((a, b) => (a.name || '').localeCompare(b.name ||
-                                ''));
+                            ''));
                             sorted.forEach(c => {
                                 const color = getColorForCourse(c);
                                 const teacherStr = c.teacher ? `${c.teacher}` : '';
@@ -1423,7 +1443,7 @@
                     name,
                     teacher,
                     classroom,
-                    weeks: weeksInput, // 保留原始字符串
+                    weeks: weeksInput,
                     day: isDesign ? 0 : day,
                     sections: isDesign ? [] : selectedSections,
                     note,
